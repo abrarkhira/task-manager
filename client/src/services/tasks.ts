@@ -29,3 +29,9 @@ export const createTask = async (request: any) => {
     throw new error();
   }
 };
+
+export const updateTask = async (request: any, id: string) => {
+  console.log(id);
+  const { data } = await TaskAPI.put(`/${id}`, request);
+  return data;
+};

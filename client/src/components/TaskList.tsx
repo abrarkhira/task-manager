@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { FaCheck, FaTrash } from "react-icons/fa";
+import { FaCheck, FaEdit, FaTrash } from "react-icons/fa";
+import AddTask from "../pages/Tasks/AddTask";
 
 interface Task {
   _id: string;
@@ -12,40 +13,66 @@ interface Task {
 interface TaskListProps {
   tasks: Task[];
   onComplete: (id: string) => void;
+  refetch?: () => void;
   onDelete: (id: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onComplete, onDelete }) => {
+const TaskList: React.FC<TaskListProps> = ({
+  tasks,
+  onComplete,
+  onDelete,
+  refetch,
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskData, setTaskData] = useState({});
+
+  const updateTask = (task: any) => {
+    setTaskData(task);
+    setIsModalOpen(true);
+  };
+
   return (
-    <TaskListContainer>
-      {tasks.map((task) => (
-        <TaskItem key={task._id}>
-          <TaskDetails>
-            <TaskTitle>{task.title}</TaskTitle>
-            <TaskDescription>{task.description}</TaskDescription>
-          </TaskDetails>
-          <TaskActions>
-            <TaskButton
-              complete
-              onClick={() => onComplete(task._id)}
-              disabled={task.status === "Completed"}
-            >
-              <FaCheck />
-              {task.status === "Completed" ? "Completed" : "Complete"}
-            </TaskButton>
-            <TaskButton delete onClick={() => onDelete(task._id)}>
-              <FaTrash /> Delete
-            </TaskButton>
-          </TaskActions>
-        </TaskItem>
-      ))}
-    </TaskListContainer>
+    <>
+      <TaskListContainer>
+        {tasks.map((task) => (
+          <TaskItem key={task._id}>
+            <TaskDetails>
+              <TaskTitle>{task.title}</TaskTitle>
+              <TaskDescription>{task.description}</TaskDescription>
+            </TaskDetails>
+            <TaskActions>
+              <TaskButton onClick={() => updateTask(task)}>
+                <FaEdit /> Edit
+              </TaskButton>
+              <TaskButton
+                complete
+                onClick={() => onComplete(task._id)}
+                disabled={task.status === "Completed"}
+              >
+                <FaCheck />
+                {task.status === "Completed" ? "Completed" : "Complete"}
+              </TaskButton>
+              <TaskButton delete onClick={() => onDelete(task._id)}>
+                <FaTrash /> Delete
+              </TaskButton>
+            </TaskActions>
+          </TaskItem>
+        ))}
+      </TaskListContainer>
+      {isModalOpen && (
+        <AddTask
+          refetch={refetch}
+          task={taskData}
+          modalType="update"
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
 export default TaskList;
 
-// Styled components
 const TaskListContainer = styled.ul`
   list-style: none;
   padding: 0;
@@ -102,19 +129,11 @@ const TaskButton = styled.button<{ complete?: boolean; delete?: boolean }>`
   transition: all 0.3s ease;
   color: white;
   background: ${({ complete, delete: del }) =>
-    complete
-      ? "#1abc9c"
-      : del
-      ? "#e74c3c"
-      : "#bdc3c7"}; /* Conditional colors */
+    complete ? "#1abc9c" : del ? "#e74c3c" : "#3498db"};
 
   &:hover {
     background: ${({ complete, delete: del }) =>
-      complete
-        ? "#16a085"
-        : del
-        ? "#c0392b"
-        : "#bdc3c7"}; /* Conditional hover colors */
+      complete ? "#16a085" : del ? "#c0392b" : "#2980b9"};
   }
 
   &:disabled {

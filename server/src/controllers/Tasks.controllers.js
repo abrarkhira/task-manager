@@ -52,6 +52,8 @@ const completeTask = async (req, res, next) => {
 }
 
 const updateTask = async (req, res, next) => {
+    console.log("hit")
+    console.log(req.params.id)
     try {
         const taskId = req.params.id;
         const updatedTask = await TaskData.findByIdAndUpdate(taskId, req.body, { new: true });

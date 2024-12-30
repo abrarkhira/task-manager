@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { RootState } from "../../store/store";
-import { setTasks, updateTask, removeTask } from "../../store/tasksSlics";
+import { setTasks, removeTask, updateTask } from "../../store/tasksSlics";
 import styles from "./ViewTasks.module.css";
 import {
   completeTask,
@@ -44,6 +44,7 @@ const ViewTasks: React.FC = () => {
       dispatch(setTasks(taskData));
     }
   }, [taskData, dispatch]);
+
   const handleComplete = async (id: string) => {
     try {
       const updatedTask = await completeTask(id);
@@ -132,6 +133,8 @@ const ViewTasks: React.FC = () => {
           <AddTask
             onClose={() => setIsModalOpen(false)}
             onTaskAdded={handleTaskAdd}
+            refetch={refetch}
+            modalType="add"
           />
         )}
         {isLoading && <p>Loading tasks...</p>}
@@ -149,6 +152,7 @@ const ViewTasks: React.FC = () => {
           </>
         ) : (
           <TaskList
+            refetch={refetch}
             tasks={tasks}
             onComplete={handleComplete}
             onDelete={handleDelete}
