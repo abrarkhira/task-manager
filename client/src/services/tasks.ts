@@ -1,7 +1,11 @@
 import { TaskAPI } from "./config/tasks-axios";
 
-export const fetchTasks = async () => {
-  const { data } = await TaskAPI.get("");
+export const fetchTasks = async ({ status = "all", search = "" } = {}) => {
+  const params = new URLSearchParams();
+  if (status !== "all") params.append("status", status);
+  if (search) params.append("search", search);
+
+  const { data } = await TaskAPI.get(`?${params.toString()}`);
   console.log(data);
   return data;
 };
@@ -12,13 +16,14 @@ export const completeTask = async (id: string) => {
 };
 
 export const deleteTask = async (id: string) => {
-  await TaskAPI.delete(`/api/tasks/${id}`);
+  await TaskAPI.delete(`/${id}`);
   return id;
 };
 
-export const addTask = async (request: any) => {
+export const createTask = async (request: any) => {
   try {
-    await TaskAPI.post("", { request });
+    console.log(request);
+    await TaskAPI.post("", request);
   } catch (error: any) {
     console.log(error);
     throw new error();

@@ -17,6 +17,8 @@ const LoginPage = () => {
     password: "",
   });
 
+  const [invalidCreds, setInvalidCreds] = useState(false);
+
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,20 +66,19 @@ const LoginPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      const { data, status } = await (currentForm === "signup"
+      const { data } = await (currentForm === "signup"
         ? registerAPI(formData)
         : currentForm === "login"
         ? loginAPI(formData)
         : null);
-      console.log(status);
-      if (status >= 400) {
-        return toast.error("Invalid Credentials");
-      }
       localStorage.setItem("authToken", data.token);
       toast.success("Login Successful");
       navigate("/tasks");
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.response?.status === 400) {
+        return setInvalidCreds(true);
+      }
     }
   };
 
@@ -103,6 +104,13 @@ const LoginPage = () => {
             </h1>
           </div>
           <form onSubmit={handleSubmit}>
+            {invalidCreds && (
+              <div>
+                <p style={{ fontSize: "14px", color: "red" }}>
+                  Invalid Credentials
+                </p>
+              </div>
+            )}
             {currentForm === "login" ? (
               <div className={styles.formInput}>
                 <div className={styles.inputGroup}>

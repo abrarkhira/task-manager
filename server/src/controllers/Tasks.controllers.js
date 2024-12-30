@@ -1,8 +1,10 @@
 const TaskData = require("../models/Tasks.model");
 
 const createTask = async (req, res, next) => {
+    console.log("first")
     try {
         const { title, description, status, dueDate } = req.body;
+        console.log(title)
         const userId = req.user;
         const task = new TaskData({
             userId,
@@ -23,12 +25,18 @@ const createTask = async (req, res, next) => {
 const getAllTasks = async (req, res, next) => {
     try {
         const userId = req.user;
-        const tasks = await TaskData.find({ userId });
+        const { status, search } = req.query;
+
+        const query = { userId };
+        if (status) query.status = status;
+        if (search) query.title = { $regex: search, $options: 'i' };
+
+        const tasks = await TaskData.find(query).sort({ createdAt: -1 });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
-}
+};
 
 const completeTask = async (req, res, next) => {
     try {

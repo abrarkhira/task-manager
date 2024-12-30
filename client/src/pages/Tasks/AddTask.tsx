@@ -1,31 +1,30 @@
 import { useState } from "react";
-import axios from "axios";
 import styles from "./AddTask.module.css";
 import { FaPlus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 // API Call to create a new task
-const createTask = async (task: { title: string; description: string }) => {
-  const { data } = await axios.post("/api/tasks", task); // Adjust API endpoint
-  return data;
-};
 
-const AddTask: React.FC<{ onClose: () => void; onTaskAdded: () => void }> = ({
-  onClose,
-  onTaskAdded,
-}) => {
+const AddTask: React.FC<{
+  onClose: () => void;
+  onTaskAdded: (request: any) => void;
+}> = ({ onClose, onTaskAdded }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const handleAddTask = async () => {
-    if (!title || !description) return;
+    console.log(title);
+    if (!title) {
+      return toast.error("Title is mandatory ");
+    }
 
     try {
-      await createTask({ title, description });
+      //   await createTask({ title, description });
       setTitle("");
       setDescription("");
-      onTaskAdded();
-      onClose(); // Close modal after task is added
+      onTaskAdded({ title, description });
+      onClose();
     } catch (error) {
       console.error("Error adding task:", error);
     }

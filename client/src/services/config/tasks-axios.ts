@@ -1,7 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 
 export const TaskAPI = axios.create({
-  baseURL: "http://localhost:8080/task",
+  baseURL: "http://localhost:5000/task",
 });
 
 TaskAPI.interceptors.request.use((config: InternalAxiosRequestConfig) => {
